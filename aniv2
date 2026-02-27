@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy 2 Years 💖</title>
+
+<style>
+body {
+    margin:0;
+    font-family: 'Poppins', sans-serif;
+    text-align:center;
+    overflow:hidden;
+    background:#ffdde1;
+}
+
+/* LOVE BACKGROUND */
+.heart-bg {
+    position:fixed;
+    bottom:-10px;
+    font-size:20px;
+    animation: floatUp linear infinite;
+    opacity:0.7;
+}
+@keyframes floatUp {
+    0% {transform:translateY(0); opacity:1;}
+    100% {transform:translateY(-100vh); opacity:0;}
+}
+
+.container {
+    padding:30px;
+    position:relative;
+    z-index:2;
+}
+
+/* ENVELOPE */
+.envelope {
+    width:200px;
+    height:130px;
+    background:#ff4d88;
+    margin:150px auto;
+    position:relative;
+    cursor:pointer;
+    border-radius:10px;
+}
+.flap {
+    width:0;
+    height:0;
+    border-left:100px solid transparent;
+    border-right:100px solid transparent;
+    border-bottom:70px solid #ff99bb;
+    position:absolute;
+    top:-70px;
+    left:0;
+    transition:0.5s;
+}
+.open .flap {
+    transform:rotateX(180deg);
+    top:-20px;
+}
+
+/* BUTTON */
+button {
+    padding:12px 20px;
+    border:none;
+    border-radius:20px;
+    background:#ff4d88;
+    color:white;
+    font-size:16px;
+    margin-top:20px;
+}
+input {
+    padding:10px;
+    border-radius:15px;
+    border:none;
+    margin-top:15px;
+    font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+const startDate = new Date("2024-10-25");
+const today = new Date();
+const totalDays = Math.floor((today - startDate)/(1000*60*60*24));
+
+let score = 0;
+let questionIndex = 0;
+
+const questions = [
+["Tanggal jadian kita?","25 Oktober 2024"],
+["Siapa yang nembak duluan?","Aku"],
+["Panggilan kesayangan?","Sayang"],
+["Tempat first date?","Cafe"],
+["Warna favorit kamu?","Pink"],
+["Siapa paling posesif?","Aku"],
+["Siapa paling sabar?","Kamu"],
+["Siapa paling kangenan?","Aku"],
+["Kalau berantem siapa duluan minta maaf?","Aku"],
+["Mau sama aku sampai kapan?","Selamanya"]
+];
+
+const app = document.getElementById("app");
+
+/* BACKGROUND LOVE LOOP */
+function createHearts(){
+    setInterval(()=>{
+        const heart = document.createElement("div");
+        heart.className="heart-bg";
+        heart.style.left=Math.random()*100+"vw";
+        heart.style.animationDuration=(Math.random()*3+3)+"s";
+        heart.innerHTML="💖";
+        document.body.appendChild(heart);
+        setTimeout(()=>heart.remove(),6000);
+    },500);
+}
+
+/* SOUND */
+function playSound(freq,duration){
+    const audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=audioCtx.createOscillator();
+    osc.type="sine";
+    osc.frequency.setValueAtTime(freq,audioCtx.currentTime);
+    osc.connect(audioCtx.destination);
+    osc.start();
+    setTimeout(()=>osc.stop(),duration);
+}
+
+/* LOADING SCREEN */
+function showEnvelope(){
+    app.innerHTML=`
+        <div class="envelope" onclick="openLetter(this)">
+            <div class="flap"></div>
+        </div>
+        <h2>Klik suratnya 💌</h2>
+    `;
+}
+
+function openLetter(el){
+    playSound(700,200);
+    el.classList.add("open");
+    setTimeout(startScreen,600);
+}
+
+/* START SCREEN */
+function startScreen(){
+    app.innerHTML=`
+        <div class="container">
+        <h1>💖 HAPPY 2 YEARS 💖</h1>
+        <h2>Sudah bersama selama ${totalDays} hari 💕</h2>
+        <button onclick="startQuiz()">Mulai Quiz 💌</button>
+        </div>
+    `;
+}
+
+function startQuiz(){
+    playSound(600,150);
+    showQuestion();
+}
+
+function showQuestion(){
+    if(questionIndex<questions.length){
+        app.innerHTML=`
+        <div class="container">
+        <h2>${questions[questionIndex][0]}</h2>
+        <input id="answer" placeholder="Jawaban kamu...">
+        <br>
+        <button onclick="checkAnswer()">Kirim 💌</button>
+        </div>
+        `;
+    }else{
+        showResult();
+    }
+}
+
+function checkAnswer(){
+    const ans=document.getElementById("answer").value;
+    if(ans.toLowerCase()===questions[questionIndex][1].toLowerCase()){
+        score+=10;
+        playSound(900,200);
+        alert("Benar 💕");
+    }else{
+        playSound(300,400);
+        alert("Salah 😅 Jawaban: "+questions[questionIndex][1]);
+    }
+    questionIndex++;
+    showQuestion();
+}
+
+function showResult(){
+    if(score===100){
+        launchConfetti();
+        app.innerHTML=`
+        <div class="container">
+        <h1>🎉 PERFECT SCORE 💖</h1>
+        <h2>Kamu pasangan terbaik!</h2>
+        </div>
+        `;
+    }else{
+        app.innerHTML=`
+        <div class="container">
+        <h1>Skor kamu: ${score}/100</h1>
+        <h2>Tetap sayang kok 💕</h2>
+        </div>
+        `;
+    }
+}
+
+/* CONFETTI */
+function launchConfetti(){
+    for(let i=0;i<100;i++){
+        const heart=document.createElement("div");
+        heart.className="heart-bg";
+        heart.style.left=Math.random()*100+"vw";
+        heart.style.animationDuration=(Math.random()*2+2)+"s";
+        heart.innerHTML="💖";
+        document.body.appendChild(heart);
+        setTimeout(()=>heart.remove(),4000);
+    }
+}
+
+createHearts();
+showEnvelope();
+</script>
+
+</body>
+</html>
